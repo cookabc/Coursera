@@ -16,8 +16,13 @@ public class Percolation {
         this.siteArray = new boolean[n * n + 2];
         this.siteArray[0] = true;
         this.siteArray[n * n + 1] = true;
-        this.numberOfOpenSites = 2;
         this.quickUnionUF = new WeightedQuickUnionUF(n * n + 2);
+        for (int i = 0; i < n; i++) {
+            this.quickUnionUF.union(0, this.getSiteValue(1, i + 1));
+        }
+        for (int i = 0; i < n; i++) {
+            this.quickUnionUF.union(n * n + 1, this.getSiteValue(n, i + 1));
+        }
     }
 
     // opens the site (row, col) if it is not open already
