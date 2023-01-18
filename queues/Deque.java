@@ -57,7 +57,7 @@ public class Deque<Item> implements Iterable<Item> {
         if (item == null) {
             throw new IllegalArgumentException();
         }
-        Node oldTail = this.head;
+        Node oldTail = this.tail;
         this.tail = new Node(item);
         if (this.size == 0) {
             this.head = this.tail;
@@ -144,9 +144,9 @@ public class Deque<Item> implements Iterable<Item> {
         }
         StdOut.println("=========");
         deque.addFirst("First_1");
-        deque.addFirst("First_2");
         deque.addLast("Last_1");
         deque.addLast("Last_2");
+        deque.addFirst("First_2");
         try {
             deque.addLast(null);
         } catch (Exception e) {
