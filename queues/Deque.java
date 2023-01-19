@@ -102,28 +102,29 @@ public class Deque<Item> implements Iterable<Item> {
 
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {
-        return new DqIterator();
-    }
+        return new Iterator<>() {
+            private Node current = head;
 
-    private class DqIterator implements Iterator<Item> {
-        private Node current = head;
-
-        public boolean hasNext() {
-            return current != null;
-        }
-
-        public Item next() {
-            if (current == null) {
-                throw new java.util.NoSuchElementException();
+            @Override
+            public boolean hasNext() {
+                return this.current != null;
             }
-            Item item = current.item;
-            current = current.next;
-            return item;
-        }
 
-        public void remove() {
-            throw new java.lang.UnsupportedOperationException();
-        }
+            @Override
+            public Item next() {
+                if (this.current == null) {
+                    throw new java.util.NoSuchElementException();
+                }
+                Item item = this.current.item;
+                this.current = this.current.next;
+                return item;
+            }
+
+            @Override
+            public void remove() {
+                throw new java.lang.UnsupportedOperationException();
+            }
+        };
     }
 
     // unit testing (required)
