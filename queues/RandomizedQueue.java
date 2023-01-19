@@ -2,19 +2,17 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
-import java.util.Random;
+import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private Item[] itemArray;
     private int size;
-    private final Random random;
 
     // construct an empty randomized queue
     public RandomizedQueue() {
         this.itemArray = this.createEmptyArray(1);
         this.size = 0;
-        this.random = new Random();
     }
 
     // is the randomized queue empty?
@@ -55,7 +53,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (this.isEmpty()) {
             throw new java.util.NoSuchElementException();
         }
-        return this.itemArray[this.random.nextInt(this.size)];
+        return this.itemArray[StdRandom.uniformInt(this.size)];
     }
 
     // return an independent iterator over items in random order
@@ -99,15 +97,15 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    private Item[] copyArray(Item[] oldArray, int size) {
-        Item[] newArray = this.createEmptyArray(size);
-        System.arraycopy(oldArray, 0, newArray, 0, size);
+    private Item[] copyArray(Item[] oldArray, int copySize) {
+        Item[] newArray = this.createEmptyArray(copySize);
+        System.arraycopy(oldArray, 0, newArray, 0, copySize);
         StdRandom.shuffle(newArray);
         return newArray;
     }
 
-    private Item[] createEmptyArray(int size) {
-        return (Item[]) new Object[size];
+    private Item[] createEmptyArray(int initSize) {
+        return (Item[]) new Object[initSize];
     }
 
     // unit testing (required)
@@ -118,15 +116,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println("=========");
         try {
             StdOut.println(randomizedQueue.sample());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
+        try {
+            randomizedQueue.enqueue(null);
+        } catch (IllegalArgumentException e) {
+            StdOut.println(e);
+        }
         randomizedQueue.enqueue("First_1");
         randomizedQueue.enqueue("Last_1");
         randomizedQueue.enqueue("Last_2");
@@ -140,7 +143,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         try {
             iterator.remove();
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
@@ -151,12 +154,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println("=========");
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
@@ -165,22 +168,22 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         StdOut.println("=========");
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             StdOut.println(randomizedQueue.dequeue());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             StdOut.println(randomizedQueue.sample());
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");

@@ -135,12 +135,12 @@ public class Deque<Item> implements Iterable<Item> {
         StdOut.println("=========");
         try {
             deque.removeFirst();
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         try {
             deque.removeLast();
-        } catch (Exception e) {
+        } catch (NoSuchElementException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
@@ -150,12 +150,12 @@ public class Deque<Item> implements Iterable<Item> {
         deque.addFirst("First_2");
         try {
             deque.addLast(null);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             StdOut.println(e);
         }
         try {
             deque.addFirst(null);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
@@ -168,7 +168,7 @@ public class Deque<Item> implements Iterable<Item> {
         }
         try {
             iterator.remove();
-        } catch (Exception e) {
+        } catch (UnsupportedOperationException e) {
             StdOut.println(e);
         }
         StdOut.println("=========");
