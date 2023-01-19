@@ -11,7 +11,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // construct an empty randomized queue
     public RandomizedQueue() {
-        this.itemArray = this.createEmptyArray(1);
+        this.itemArray = (Item[]) new Object[1];
         this.size = 0;
     }
 
@@ -93,21 +93,17 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             newSize = this.itemArray.length / 2;
         }
         if (newSize != this.itemArray.length) {
-            Item[] newItems = this.createEmptyArray(newSize);
+            Item[] newItems = (Item[]) new Object[newSize];
             System.arraycopy(this.itemArray, 0, newItems, 0, size);
             this.itemArray = newItems;
         }
     }
 
     private Item[] copyArray(Item[] oldArray, int copySize) {
-        Item[] newArray = this.createEmptyArray(copySize);
+        Item[] newArray = (Item[]) new Object[copySize];
         System.arraycopy(oldArray, 0, newArray, 0, copySize);
         StdRandom.shuffle(newArray);
         return newArray;
-    }
-
-    private Item[] createEmptyArray(int initSize) {
-        return (Item[]) new Object[initSize];
     }
 
     // unit testing (required)
