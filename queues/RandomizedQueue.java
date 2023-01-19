@@ -58,28 +58,30 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
-        return new Iterator<Item>() {
-            private final Item[] newArray = copyArray(itemArray, size());
-            private int cursor = 0;
+        return new RandomizedQueueIterator();
+    }
 
-            @Override
-            public boolean hasNext() {
-                return this.cursor < this.newArray.length;
-            }
+    private class RandomizedQueueIterator implements Iterator<Item> {
+        private final Item[] newArray = copyArray(itemArray, size());
+        private int cursor = 0;
 
-            @Override
-            public Item next() {
-                if (this.cursor >= this.newArray.length) {
-                    throw new java.util.NoSuchElementException();
-                }
-                return this.newArray[this.cursor++];
-            }
+        @Override
+        public boolean hasNext() {
+            return this.cursor < this.newArray.length;
+        }
 
-            @Override
-            public void remove() {
-                throw new java.lang.UnsupportedOperationException();
+        @Override
+        public Item next() {
+            if (this.cursor >= this.newArray.length) {
+                throw new java.util.NoSuchElementException();
             }
-        };
+            return this.newArray[this.cursor++];
+        }
+
+        @Override
+        public void remove() {
+            throw new java.lang.UnsupportedOperationException();
+        }
     }
 
     private void resizeItemArray() {
