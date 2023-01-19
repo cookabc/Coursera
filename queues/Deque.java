@@ -102,7 +102,7 @@ public class Deque<Item> implements Iterable<Item> {
 
     // return an iterator over items in order from front to back
     public Iterator<Item> iterator() {
-        return new Iterator<>() {
+        return new Iterator<Item>() {
             private Node current = head;
 
             @Override

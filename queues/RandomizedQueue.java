@@ -60,7 +60,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
-        return new Iterator<>() {
+        return new Iterator<Item>() {
             private final Item[] newArray = copyArray(itemArray, size());
             private int cursor = 0;
 
