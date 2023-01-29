@@ -14,18 +14,17 @@ public class BruteCollinearPoints {
         if (points == null) {
             throw new IllegalArgumentException();
         }
-        // if one point is null, NPE will be thrown
-        try {
-            Arrays.sort(points);
-        } catch (NullPointerException npe) {
-            throw new IllegalArgumentException();
-        }
+        Arrays.sort(points);
         // make sure no overlapping points
         for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) {
+                throw new IllegalArgumentException();
+            }
             if (i > 0 && points[i].compareTo(points[i - 1]) == 0) {
                 throw new IllegalArgumentException();
             }
         }
+
         for (int p = 0; p < points.length - 3; p++) {
             for (int q = p + 1; q < points.length - 2; q++) {
                 for (int r = q + 1; r < points.length - 1; r++) {

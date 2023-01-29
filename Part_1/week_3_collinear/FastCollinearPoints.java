@@ -14,15 +14,13 @@ public class FastCollinearPoints {
         if (points == null) {
             throw new IllegalArgumentException();
         }
-        // if one point is null, NPE will be thrown
-        try {
-            Arrays.sort(points);
-        } catch (NullPointerException npe) {
-            throw new IllegalArgumentException();
-        }
+        Arrays.sort(points);
         // make sure no overlapping points
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].compareTo(points[i - 1]) == 0) {
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) {
+                throw new IllegalArgumentException();
+            }
+            if (i > 0 && points[i].compareTo(points[i - 1]) == 0) {
                 throw new IllegalArgumentException();
             }
         }
