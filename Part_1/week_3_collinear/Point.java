@@ -86,6 +86,7 @@ public class Point implements Comparable<Point> {
      * point; and a positive integer if this point is greater than the
      * argument point
      */
+    @Override
     public int compareTo(Point that) {
         /* YOUR CODE HERE */
         if (this.x == that.x && this.y == that.y) {
@@ -119,6 +120,7 @@ public class Point implements Comparable<Point> {
      *
      * @return a string representation of this point
      */
+    @Override
     public String toString() {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
