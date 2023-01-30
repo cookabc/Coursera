@@ -2,8 +2,8 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Board {
@@ -90,55 +90,32 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        List<Board> neighbors = new ArrayList<>();
-        for (int i = 0; i < this.tiles.length; i++) {
-            for (int j = 0; j < this.tiles.length; j++) {
+        List<Board> neighbors = new LinkedList<>();
+        int zeroX = this.dimension - 1;
+        int zeroY = this.dimension - 1;
+        for (int i = 0; i < this.dimension; i++) {
+            if (this.tiles[zeroX][zeroY] == 0) {
+                break;
+            }
+            for (int j = 0; j < this.dimension; j++) {
                 if (this.tiles[i][j] == 0) {
-                    if (i > 0) {
-                        int[][] leftBoardTiles = new int[this.dimension][this.dimension];
-                        for (int k = 0; k < this.dimension; k++) {
-                            leftBoardTiles[k] = Arrays.copyOf(tiles[k], this.dimension);
-                        }
-                        leftBoardTiles[i][j] = this.tiles[i - 1][j];
-                        leftBoardTiles[i - 1][j] = 0;
-                        neighbors.add(new Board(leftBoardTiles));
-                    }
-
-                    if (i < this.dimension - 1) {
-                        int[][] rightBoardTiles = new int[this.dimension][this.dimension];
-                        for (int k = 0; k < this.dimension; k++) {
-                            rightBoardTiles[k] = Arrays.copyOf(tiles[k], this.dimension);
-                        }
-                        rightBoardTiles[i][j] = this.tiles[i + 1][j];
-                        rightBoardTiles[i + 1][j] = 0;
-                        neighbors.add(new Board(rightBoardTiles));
-                    }
-
-                    if (j > 0) {
-                        int[][] topBoardTiles = new int[this.dimension][this.dimension];
-                        for (int k = 0; k < this.dimension; k++) {
-                            topBoardTiles[k] = Arrays.copyOf(tiles[k], this.dimension);
-                        }
-                        topBoardTiles[i][j] = this.tiles[i][j - 1];
-                        topBoardTiles[i][j - 1] = 0;
-                        neighbors.add(new Board(topBoardTiles));
-                    }
-
-                    if (j < this.dimension - 1) {
-                        int[][] bottomBoardTiles = new int[this.dimension][this.dimension];
-                        for (int k = 0; k < this.dimension; k++) {
-                            bottomBoardTiles[k] = Arrays.copyOf(tiles[k], this.dimension);
-                        }
-                        bottomBoardTiles[i][j] = this.tiles[i][j + 1];
-                        bottomBoardTiles[i][j + 1] = 0;
-                        neighbors.add(new Board(bottomBoardTiles));
-                    }
+                    zeroX = i;
+                    zeroY = j;
                     break;
                 }
             }
-            if (neighbors.size() > 0) {
-                break;
-            }
+        }
+        if (zeroX > 0) {
+            neighbors.add(this.exchange(zeroX, zeroY, zeroX - 1, zeroY));
+        }
+        if (zeroX < this.dimension - 1) {
+            neighbors.add(this.exchange(zeroX, zeroY, zeroX + 1, zeroY));
+        }
+        if (zeroY > 0) {
+            neighbors.add(this.exchange(zeroX, zeroY, zeroX, zeroY - 1));
+        }
+        if (zeroY < this.dimension - 1) {
+            neighbors.add(this.exchange(zeroX, zeroY, zeroX, zeroY + 1));
         }
         return neighbors;
     }
@@ -151,14 +128,18 @@ public class Board {
             row = StdRandom.uniformInt(this.dimension);
             col = StdRandom.uniformInt(this.dimension);
         }
-        int[][] twinTiles = new int[this.dimension][this.dimension];
+        return this.exchange(row, col, col, row);
+    }
+
+    private Board exchange(int srcX, int srcY, int destX, int destY) {
+        int[][] newTiles = new int[this.dimension][];
         for (int i = 0; i < this.dimension; i++) {
-            twinTiles[i] = Arrays.copyOf(this.tiles[i], this.dimension);
+            newTiles[i] = Arrays.copyOf(this.tiles[i], this.dimension);
         }
-        int tmp = twinTiles[row][col];
-        twinTiles[row][col] = this.tiles[col][row];
-        twinTiles[col][row] = tmp;
-        return new Board(twinTiles);
+        int temp = newTiles[srcX][srcY];
+        newTiles[srcX][srcY] = newTiles[destX][destY];
+        newTiles[destX][destY] = temp;
+        return new Board(newTiles);
     }
 
     // unit testing (not graded)
