@@ -45,10 +45,7 @@ public class Board {
         int outPlaceCount = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
-                if (this.tiles[i][j] == 0) {
-                    continue;
-                }
-                if (this.tiles[i][j] != (i * this.dimension + j + 1)) {
+                if (this.tiles[i][j] != 0 && this.tiles[i][j] != (i * this.dimension + j + 1)) {
                     outPlaceCount++;
                 }
             }
@@ -61,12 +58,11 @@ public class Board {
         int distances = 0;
         for (int i = 0; i < this.dimension; i++) {
             for (int j = 0; j < this.dimension; j++) {
-                if (this.tiles[i][j] == 0) {
-                    continue;
+                if (this.tiles[i][j] != 0) {
+                    int horizontalDistances = Math.abs((this.tiles[i][j] - 1) / this.dimension - i);
+                    int verticalDistances = Math.abs((this.tiles[i][j] - 1) % this.dimension - j);
+                    distances += (horizontalDistances + verticalDistances);
                 }
-                int horizontalDistances = Math.abs(this.tiles[i][j] / this.dimension - i);
-                int verticalDistances = Math.abs((this.tiles[i][j] - 1) % this.dimension - j);
-                distances += (horizontalDistances + verticalDistances);
             }
         }
         return distances;
