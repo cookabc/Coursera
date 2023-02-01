@@ -25,6 +25,7 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
+        s.append("\n");
         s.append(this.dimension);
         for (int i = 0; i < this.dimension; i++) {
             s.append("\n");
