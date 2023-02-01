@@ -121,7 +121,7 @@ public class Board {
     public Board twin() {
         int row = 0;
         int col = 0;
-        while (row == col) {
+        while (row == col || this.tiles[row][col] == 0 || this.tiles[col][row] == 0) {
             row = StdRandom.uniformInt(this.dimension);
             col = StdRandom.uniformInt(this.dimension);
         }
