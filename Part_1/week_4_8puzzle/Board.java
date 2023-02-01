@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -119,13 +118,14 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of tiles
     public Board twin() {
-        int row = 0;
-        int col = 0;
-        while (row == col || this.tiles[row][col] == 0 || this.tiles[col][row] == 0) {
-            row = StdRandom.uniformInt(this.dimension);
-            col = StdRandom.uniformInt(this.dimension);
+        for (int i = 0; i < this.dimension; i++) {
+            for (int j = 0; j < this.dimension - 1; j++) {
+                if (this.tiles[i][j] != 0 && this.tiles[i][j + 1] != 0) {
+                    return this.exchange(i, j, i, j + 1);
+                }
+            }
         }
-        return this.exchange(row, col, col, row);
+        return this;
     }
 
     private Board exchange(int srcX, int srcY, int destX, int destY) {
