@@ -7,30 +7,36 @@ import java.util.Objects;
 
 public class Solver {
 
-    private final SearchBoard goalBoard;
+    private SearchBoard goalBoard = null;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
         if (initial == null) {
             throw new IllegalArgumentException("initial board cannot be null");
         }
-        if (initial.isGoal()) {
-            this.goalBoard = new SearchBoard(initial);
-            return;
-        }
+
         MinPQ<SearchBoard> minPQ = new MinPQ<>();
         SearchBoard minSearchBoard = new SearchBoard(initial);
-        while (!minSearchBoard.board.isGoal()) {
-            for (Board neighborBoard : minSearchBoard.board.neighbors()) {
-                if (minSearchBoard.prev == null || !Objects.equals(neighborBoard, minSearchBoard.prev.board)) {
-                    minPQ.insert(new SearchBoard(neighborBoard, minSearchBoard));
-                }
-            }
-            if (!minPQ.isEmpty()) {
-                minSearchBoard = minPQ.delMin();
+
+        MinPQ<SearchBoard> minPQTwin = new MinPQ<>();
+        SearchBoard minSearchBoardTwin = new SearchBoard(initial.twin());
+
+        while (!minSearchBoard.board.isGoal() && !minSearchBoardTwin.board.isGoal()) {
+            minSearchBoard = getSearchBoard(minPQ, minSearchBoard);
+            minSearchBoardTwin = getSearchBoard(minPQTwin, minSearchBoardTwin);
+        }
+        if (minSearchBoard.board.isGoal()) {
+            this.goalBoard = minSearchBoard;
+        }
+    }
+
+    private static SearchBoard getSearchBoard(MinPQ<SearchBoard> minPQ, SearchBoard minSearchBoard) {
+        for (Board neighborBoard : minSearchBoard.board.neighbors()) {
+            if (minSearchBoard.prev == null || !Objects.equals(neighborBoard, minSearchBoard.prev.board)) {
+                minPQ.insert(new SearchBoard(neighborBoard, minSearchBoard));
             }
         }
-        this.goalBoard = minSearchBoard;
+        return minPQ.isEmpty() ? minSearchBoard : minPQ.delMin();
     }
 
     private static class SearchBoard implements Comparable<SearchBoard> {
