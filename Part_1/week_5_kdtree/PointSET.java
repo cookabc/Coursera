@@ -54,7 +54,7 @@ public class PointSET {
         }
         List<Point2D> points = new ArrayList<>();
         this.pointSet.forEach(p -> {
-            if (rect.xmin() <= p.x() && rect.xmax() >= p.x() && rect.ymin() <= p.y() && rect.ymax() >= p.y()) {
+            if (rect.contains(p)) {
                 points.add(p);
             }
         });
