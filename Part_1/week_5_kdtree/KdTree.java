@@ -58,12 +58,14 @@ public class KdTree {
                 } else if (p.x() > node.point.x()) {
                     node.right = this.insert(node.right, p, Direction.VERTICAL);
                 }
+                break;
             case VERTICAL:
                 if (p.y() < node.point.y()) {
                     node.left = this.insert(node.left, p, Direction.HORIZONTAL);
                 } else if (p.y() > node.point.y()) {
                     node.right = this.insert(node.right, p, Direction.HORIZONTAL);
                 }
+                break;
         }
         return node;
     }
