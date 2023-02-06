@@ -193,10 +193,6 @@ public class KdTree {
                 if (nearest != null && nearest.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
                     nearestPoint = nearest;
                 }
-                nearest = this.nearest(node.right, queryPoint, Direction.HORIZONTAL);
-                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
-                    nearestPoint = nearest;
-                }
                 break;
         }
         return nearestPoint;
