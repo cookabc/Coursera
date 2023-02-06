@@ -1,12 +1,13 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.SET;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class KdTree {
 
-    private int size = 0;
+    private int size;
     private Node root;
 
     // construct an empty set of points
@@ -16,11 +17,13 @@ public class KdTree {
 
     private static class Node {
         final Point2D point;
+        final RectHV rect;
         Node left = null;
         Node right = null;
 
-        Node(Point2D point) {
+        Node(Point2D point, RectHV rect) {
             this.point = point;
+            this.rect = rect;
         }
     }
 
@@ -43,13 +46,14 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException();
         }
-        this.root = this.insert(this.root, p, Direction.HORIZONTAL);
+        this.root = this.insert(this.root, p, 0, 0, 1, 1, Direction.HORIZONTAL);
     }
 
-    private Node insert(Node node, Point2D p, Direction direction) {
+    private Node insert(Node node, Point2D p, double xmin, double ymin, double xmax, double ymax, Direction direction) {
         if (node == null) {
             this.size++;
-            return new Node(p);
+            RectHV rect = new RectHV(xmin, ymin, xmax, ymax);
+            return new Node(p, rect);
         }
         if (Objects.equals(p, node.point)) {
             return node;
@@ -57,16 +61,16 @@ public class KdTree {
         switch (direction) {
             case HORIZONTAL:
                 if (Point2D.X_ORDER.compare(p, node.point) < 0) {
-                    node.left = this.insert(node.left, p, Direction.VERTICAL);
+                    node.left = this.insert(node.left, p, node.rect.xmin(), node.rect.ymin(), node.point.x(), node.rect.ymax(), Direction.VERTICAL);
                 } else {
-                    node.right = this.insert(node.right, p, Direction.VERTICAL);
+                    node.right = this.insert(node.right, p, node.point.x(), node.rect.ymin(), node.rect.xmax(), node.rect.ymax(), Direction.VERTICAL);
                 }
                 break;
             case VERTICAL:
                 if (Point2D.Y_ORDER.compare(p, node.point) < 0) {
-                    node.left = this.insert(node.left, p, Direction.VERTICAL);
+                    node.left = this.insert(node.left, p, node.rect.xmin(), node.rect.ymin(), node.rect.xmax(), node.point.y(), Direction.VERTICAL);
                 } else {
-                    node.right = this.insert(node.right, p, Direction.VERTICAL);
+                    node.right = this.insert(node.right, p, node.rect.xmin(), node.point.y(), node.rect.xmax(), node.rect.ymax(), Direction.VERTICAL);
                 }
                 break;
         }
@@ -88,21 +92,22 @@ public class KdTree {
         if (Objects.equals(p, node.point)) {
             return true;
         }
+        int compare = 0;
+        Direction newDirection = direction;
         switch (direction) {
             case HORIZONTAL:
-                if (Point2D.X_ORDER.compare(p, node.point) < 0) {
-                    return this.search(node.left, p, Direction.VERTICAL);
-                } else {
-                    return this.search(node.right, p, Direction.VERTICAL);
-                }
+                compare = Point2D.X_ORDER.compare(p, node.point);
+                newDirection = Direction.VERTICAL;
+                break;
             case VERTICAL:
-                if (Point2D.Y_ORDER.compare(p, node.point) < 0) {
-                    return this.search(node.left, p, Direction.HORIZONTAL);
-                } else {
-                    return this.search(node.right, p, Direction.HORIZONTAL);
-                }
-            default:
-                return false;
+                compare = Point2D.Y_ORDER.compare(p, node.point);
+                newDirection = Direction.HORIZONTAL;
+                break;
+        }
+        if (compare < 0) {
+            return this.search(node.left, p, newDirection);
+        } else {
+            return this.search(node.right, p, newDirection);
         }
     }
 
@@ -125,40 +130,23 @@ public class KdTree {
         if (rect == null) {
             throw new IllegalArgumentException();
         }
-        SET<Point2D> points = new SET<>();
-        this.range(this.root, rect, Direction.HORIZONTAL, points);
+        List<Point2D> points = new ArrayList<>();
+        this.range(this.root, rect, points);
         return points;
     }
 
-    private void range(Node node, RectHV rect, Direction direction, SET<Point2D> points) {
+    private void range(Node node, RectHV rect, List<Point2D> points) {
         if (node == null) {
+            return;
+        }
+        if (!rect.intersects(node.rect)) {
             return;
         }
         if (rect.contains(node.point)) {
             points.add(node.point);
         }
-        switch (direction) {
-            case HORIZONTAL:
-                if (node.point.x() <= rect.xmin()) {
-                    range(node.right, rect, Direction.VERTICAL, points);
-                } else if (node.point.x() < rect.xmax()) {
-                    range(node.left, rect, Direction.VERTICAL, points);
-                    range(node.right, rect, Direction.VERTICAL, points);
-                } else if (node.point.x() >= rect.xmax()) {
-                    range(node.left, rect, Direction.VERTICAL, points);
-                }
-                break;
-            case VERTICAL:
-                if (node.point.y() <= rect.ymin()) {
-                    range(node.right, rect, Direction.HORIZONTAL, points);
-                } else if (node.point.y() < rect.ymax()) {
-                    range(node.left, rect, Direction.HORIZONTAL, points);
-                    range(node.right, rect, Direction.HORIZONTAL, points);
-                } else if (node.point.y() >= rect.ymax()) {
-                    range(node.left, rect, Direction.HORIZONTAL, points);
-                }
-                break;
-        }
+        range(node.left, rect, points);
+        range(node.right, rect, points);
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
@@ -172,31 +160,38 @@ public class KdTree {
         return this.nearest(this.root, p, this.root.point, Direction.HORIZONTAL);
     }
 
-    private Point2D nearest(Node node, Point2D queryPoint, Point2D nearestPoint, Direction direction) {
+    private Point2D nearest(Node node, Point2D p, Point2D nearestPoint, Direction direction) {
         if (node == null) {
             return nearestPoint;
         }
-        if (node.point.equals(queryPoint)) {
+        if (node.point.equals(p)) {
             return node.point;
         }
-        if (node.point.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
+        if (node.point.distanceSquaredTo(p) < nearestPoint.distanceSquaredTo(p)) {
             nearestPoint = node.point;
         }
+        int compare = 0;
+        Direction newDirection = direction;
         switch (direction) {
             case HORIZONTAL:
-                if (Point2D.X_ORDER.compare(queryPoint, node.point) < 0) {
-                    nearestPoint = this.nearest(node.left, queryPoint, nearestPoint, Direction.VERTICAL);
-                } else {
-                    nearestPoint = this.nearest(node.right, queryPoint, nearestPoint, Direction.VERTICAL);
-                }
+                compare = Point2D.X_ORDER.compare(p, node.point);
+                newDirection = Direction.VERTICAL;
                 break;
             case VERTICAL:
-                if (Point2D.Y_ORDER.compare(queryPoint, node.point) < 0) {
-                    nearestPoint = this.nearest(node.left, queryPoint, nearestPoint, Direction.HORIZONTAL);
-                } else {
-                    nearestPoint = this.nearest(node.right, queryPoint, nearestPoint, Direction.HORIZONTAL);
-                }
+                compare = Point2D.Y_ORDER.compare(p, node.point);
+                newDirection = Direction.HORIZONTAL;
                 break;
+        }
+        if (compare < 0) {
+            nearestPoint = this.nearest(node.left, p, nearestPoint, newDirection);
+            if (node.right != null && nearestPoint.distanceSquaredTo(p) > node.right.rect.distanceSquaredTo(p)) {
+                nearestPoint = this.nearest(node.right, p, nearestPoint, newDirection);
+            }
+        } else {
+            nearestPoint = this.nearest(node.right, p, nearestPoint, newDirection);
+            if (node.left != null && nearestPoint.distanceSquaredTo(p) > node.left.rect.distanceSquaredTo(p)) {
+                nearestPoint = this.nearest(node.left, p, nearestPoint, newDirection);
+            }
         }
         return nearestPoint;
     }
@@ -227,7 +222,7 @@ public class KdTree {
         range = kdTree.range(new RectHV(0.0, 0.0, 0.5, 0.5));
         range.forEach(System.out::println);
         System.out.println("=============");
-        System.out.println(kdTree.nearest(new Point2D(0.1, 0.1)));
+        System.out.println(kdTree.nearest(new Point2D(0.5, 0.5)));
         System.out.println("=============");
     }
 }
