@@ -1,8 +1,7 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.SET;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class KdTree {
@@ -52,19 +51,22 @@ public class KdTree {
             this.size++;
             return new Node(p);
         }
+        if (Objects.equals(p, node.point)) {
+            return node;
+        }
         switch (direction) {
             case HORIZONTAL:
-                if (p.x() < node.point.x()) {
+                if (Point2D.X_ORDER.compare(p, node.point) < 0) {
                     node.left = this.insert(node.left, p, Direction.VERTICAL);
-                } else if (p.x() > node.point.x()) {
+                } else {
                     node.right = this.insert(node.right, p, Direction.VERTICAL);
                 }
                 break;
             case VERTICAL:
-                if (p.y() < node.point.y()) {
-                    node.left = this.insert(node.left, p, Direction.HORIZONTAL);
-                } else if (p.y() > node.point.y()) {
-                    node.right = this.insert(node.right, p, Direction.HORIZONTAL);
+                if (Point2D.Y_ORDER.compare(p, node.point) < 0) {
+                    node.left = this.insert(node.left, p, Direction.VERTICAL);
+                } else {
+                    node.right = this.insert(node.right, p, Direction.VERTICAL);
                 }
                 break;
         }
@@ -86,22 +88,22 @@ public class KdTree {
         if (Objects.equals(p, node.point)) {
             return true;
         }
-        boolean result = false;
         switch (direction) {
             case HORIZONTAL:
-                if (p.x() < node.point.x()) {
-                    result = this.search(node.left, p, Direction.VERTICAL);
-                } else if (p.x() > node.point.x()) {
-                    result = this.search(node.right, p, Direction.VERTICAL);
+                if (Point2D.X_ORDER.compare(p, node.point) < 0) {
+                    return this.search(node.left, p, Direction.VERTICAL);
+                } else {
+                    return this.search(node.right, p, Direction.VERTICAL);
                 }
             case VERTICAL:
-                if (p.y() < node.point.y()) {
-                    result = this.search(node.left, p, Direction.HORIZONTAL);
-                } else if (p.y() > node.point.y()) {
-                    result = this.search(node.right, p, Direction.HORIZONTAL);
+                if (Point2D.Y_ORDER.compare(p, node.point) < 0) {
+                    return this.search(node.left, p, Direction.HORIZONTAL);
+                } else {
+                    return this.search(node.right, p, Direction.HORIZONTAL);
                 }
+            default:
+                return false;
         }
-        return result;
     }
 
     // draw all points to standard draw
@@ -123,12 +125,12 @@ public class KdTree {
         if (rect == null) {
             throw new IllegalArgumentException();
         }
-        List<Point2D> points = new ArrayList<>();
+        SET<Point2D> points = new SET<>();
         this.range(this.root, rect, Direction.HORIZONTAL, points);
         return points;
     }
 
-    private void range(Node node, RectHV rect, Direction direction, List<Point2D> points) {
+    private void range(Node node, RectHV rect, Direction direction, SET<Point2D> points) {
         if (node == null) {
             return;
         }
@@ -164,34 +166,35 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException();
         }
-        return this.nearest(this.root, p, Direction.HORIZONTAL);
-    }
-
-    private Point2D nearest(Node node, Point2D queryPoint, Direction direction) {
-        if (node == null) {
+        if (this.isEmpty()) {
             return null;
         }
-        Point2D nearestPoint = node.point;
-        Point2D nearest;
+        return this.nearest(this.root, p, this.root.point, Direction.HORIZONTAL);
+    }
+
+    private Point2D nearest(Node node, Point2D queryPoint, Point2D nearestPoint, Direction direction) {
+        if (node == null) {
+            return nearestPoint;
+        }
+        if (node.point.equals(queryPoint)) {
+            return node.point;
+        }
+        if (node.point.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
+            nearestPoint = node.point;
+        }
         switch (direction) {
             case HORIZONTAL:
-                if (queryPoint.x() < node.point.x()) {
-                    nearest = this.nearest(node.left, queryPoint, Direction.VERTICAL);
+                if (Point2D.X_ORDER.compare(queryPoint, node.point) < 0) {
+                    nearestPoint = this.nearest(node.left, queryPoint, nearestPoint, Direction.VERTICAL);
                 } else {
-                    nearest = this.nearest(node.right, queryPoint, Direction.VERTICAL);
-                }
-                if (nearest != null && nearest.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
-                    nearestPoint = nearest;
+                    nearestPoint = this.nearest(node.right, queryPoint, nearestPoint, Direction.VERTICAL);
                 }
                 break;
             case VERTICAL:
-                if (queryPoint.y() < node.point.y()) {
-                    nearest = this.nearest(node.left, queryPoint, Direction.HORIZONTAL);
+                if (Point2D.Y_ORDER.compare(queryPoint, node.point) < 0) {
+                    nearestPoint = this.nearest(node.left, queryPoint, nearestPoint, Direction.HORIZONTAL);
                 } else {
-                    nearest = this.nearest(node.right, queryPoint, Direction.HORIZONTAL);
-                }
-                if (nearest != null && nearest.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
-                    nearestPoint = nearest;
+                    nearestPoint = this.nearest(node.right, queryPoint, nearestPoint, Direction.HORIZONTAL);
                 }
                 break;
         }
@@ -201,12 +204,21 @@ public class KdTree {
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         KdTree kdTree = new KdTree();
-        kdTree.insert(new Point2D(0.4, 0.3));
-        kdTree.insert(new Point2D(0.7, 0.5));
-        kdTree.insert(new Point2D(0.1, 0.4));
-        kdTree.insert(new Point2D(0.3, 0.3));
+        kdTree.insert(new Point2D(0.29, 0.17));
+        kdTree.insert(new Point2D(0.6, 0.87));
+        kdTree.insert(new Point2D(0.37, 0.01));
+        kdTree.insert(new Point2D(0.9, 0.61));
+        kdTree.insert(new Point2D(0.37, 0.01));
+        kdTree.insert(new Point2D(0.75, 0.23));
+        kdTree.insert(new Point2D(0.58, 0.31));
+        kdTree.insert(new Point2D(0.69, 0.43));
+        kdTree.insert(new Point2D(0.57, 0.69));
+        kdTree.insert(new Point2D(0.69, 0.85));
+        kdTree.insert(new Point2D(0.88, 0.9));
+        kdTree.insert(new Point2D(0.04, 0.09));
+        System.out.println(kdTree.size());
         System.out.println(kdTree.contains(new Point2D(0.1, 0.2)));
-        System.out.println(kdTree.contains(new Point2D(0.3, 0.3)));
+        System.out.println(kdTree.contains(new Point2D(0.04, 0.09)));
         System.out.println(kdTree.contains(new Point2D(0.7, 0.7)));
         System.out.println("=============");
         Iterable<Point2D> range = kdTree.range(new RectHV(0.0, 0.0, 1, 1));
