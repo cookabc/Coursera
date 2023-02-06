@@ -69,11 +69,11 @@ public class PointSET {
         if (this.isEmpty()) {
             return null;
         }
-        double distance = Double.MAX_VALUE;
+        double distance = Double.POSITIVE_INFINITY;
         Point2D nearestNeighbor = null;
         for (Point2D q : this.pointSet) {
-            if (q.distanceTo(p) < distance) {
-                distance = q.distanceTo(p);
+            if (q.distanceSquaredTo(p) < distance) {
+                distance = q.distanceSquaredTo(p);
                 nearestNeighbor = q;
             }
         }
