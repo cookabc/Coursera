@@ -1,7 +1,8 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.StdDraw;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class KdTree {
@@ -122,7 +123,40 @@ public class KdTree {
         if (rect == null) {
             throw new IllegalArgumentException();
         }
-        return null;
+        List<Point2D> points = new ArrayList<>();
+        this.range(this.root, rect, Direction.HORIZONTAL, points);
+        return points;
+    }
+
+    private void range(Node node, RectHV rect, Direction direction, List<Point2D> points) {
+        if (node == null) {
+            return;
+        }
+        if (rect.contains(node.point)) {
+            points.add(node.point);
+        }
+        switch (direction) {
+            case HORIZONTAL:
+                if (node.point.x() <= rect.xmin()) {
+                    range(node.right, rect, Direction.VERTICAL, points);
+                } else if (node.point.x() < rect.xmax()) {
+                    range(node.left, rect, Direction.VERTICAL, points);
+                    range(node.right, rect, Direction.VERTICAL, points);
+                } else if (node.point.x() >= rect.xmax()) {
+                    range(node.left, rect, Direction.VERTICAL, points);
+                }
+                break;
+            case VERTICAL:
+                if (node.point.y() <= rect.ymin()) {
+                    range(node.right, rect, Direction.HORIZONTAL, points);
+                } else if (node.point.y() < rect.ymax()) {
+                    range(node.left, rect, Direction.HORIZONTAL, points);
+                    range(node.right, rect, Direction.HORIZONTAL, points);
+                } else if (node.point.y() >= rect.ymax()) {
+                    range(node.left, rect, Direction.HORIZONTAL, points);
+                }
+                break;
+        }
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
@@ -137,12 +171,17 @@ public class KdTree {
     public static void main(String[] args) {
         KdTree kdTree = new KdTree();
         kdTree.insert(new Point2D(0.7, 0.5));
-        kdTree.insert(new Point2D(0.1, 0.2));
-        kdTree.insert(new Point2D(0.3, 0.4));
+        kdTree.insert(new Point2D(0.1, 0.4));
+        kdTree.insert(new Point2D(0.3, 0.2));
         System.out.println(kdTree.contains(new Point2D(0.1, 0.2)));
         System.out.println(kdTree.contains(new Point2D(0.3, 0.3)));
         System.out.println(kdTree.contains(new Point2D(0.7, 0.5)));
-        StdDraw.setPenRadius(0.03);
-        kdTree.draw();
+        System.out.println("=============");
+        Iterable<Point2D> range = kdTree.range(new RectHV(0.0, 0.0, 1, 1));
+        range.forEach(System.out::println);
+        System.out.println("=============");
+        range = kdTree.range(new RectHV(0.0, 0.0, 0.5, 0.5));
+        range.forEach(System.out::println);
+        System.out.println("=============");
     }
 }
