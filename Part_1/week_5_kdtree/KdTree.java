@@ -86,22 +86,22 @@ public class KdTree {
         if (Objects.equals(p, node.point)) {
             return true;
         }
+        boolean result = false;
         switch (direction) {
             case HORIZONTAL:
                 if (p.x() < node.point.x()) {
-                    return this.search(node.left, p, Direction.VERTICAL);
+                    result = this.search(node.left, p, Direction.VERTICAL);
                 } else if (p.x() > node.point.x()) {
-                    return this.search(node.right, p, Direction.VERTICAL);
+                    result = this.search(node.right, p, Direction.VERTICAL);
                 }
             case VERTICAL:
                 if (p.y() < node.point.y()) {
-                    return this.search(node.left, p, Direction.HORIZONTAL);
+                    result = this.search(node.left, p, Direction.HORIZONTAL);
                 } else if (p.y() > node.point.y()) {
-                    return this.search(node.right, p, Direction.HORIZONTAL);
+                    result = this.search(node.right, p, Direction.HORIZONTAL);
                 }
-            default:
-                return false;
         }
+        return result;
     }
 
     // draw all points to standard draw
@@ -175,18 +175,22 @@ public class KdTree {
         Point2D nearest;
         switch (direction) {
             case HORIZONTAL:
-                nearest = this.nearest(node.left, queryPoint, Direction.VERTICAL);
-                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
-                    nearestPoint = nearest;
+                if (queryPoint.x() < node.point.x()) {
+                    nearest = this.nearest(node.left, queryPoint, Direction.VERTICAL);
+                } else {
+                    nearest = this.nearest(node.right, queryPoint, Direction.VERTICAL);
                 }
-                nearest = this.nearest(node.right, queryPoint, Direction.VERTICAL);
-                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                if (nearest != null && nearest.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
                     nearestPoint = nearest;
                 }
                 break;
             case VERTICAL:
-                nearest = this.nearest(node.left, queryPoint, Direction.HORIZONTAL);
-                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                if (queryPoint.y() < node.point.y()) {
+                    nearest = this.nearest(node.left, queryPoint, Direction.HORIZONTAL);
+                } else {
+                    nearest = this.nearest(node.right, queryPoint, Direction.HORIZONTAL);
+                }
+                if (nearest != null && nearest.distanceSquaredTo(queryPoint) < nearestPoint.distanceSquaredTo(queryPoint)) {
                     nearestPoint = nearest;
                 }
                 nearest = this.nearest(node.right, queryPoint, Direction.HORIZONTAL);
@@ -215,7 +219,7 @@ public class KdTree {
         range = kdTree.range(new RectHV(0.0, 0.0, 0.5, 0.5));
         range.forEach(System.out::println);
         System.out.println("=============");
-        System.out.println(kdTree.nearest(new Point2D(0.1, 0.3)));
+        System.out.println(kdTree.nearest(new Point2D(0.1, 0.1)));
         System.out.println("=============");
     }
 }
