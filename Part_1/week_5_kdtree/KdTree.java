@@ -164,24 +164,58 @@ public class KdTree {
         if (p == null) {
             throw new IllegalArgumentException();
         }
-        return p;
+        return this.nearest(this.root, p, Direction.HORIZONTAL);
+    }
+
+    private Point2D nearest(Node node, Point2D queryPoint, Direction direction) {
+        if (node == null) {
+            return null;
+        }
+        Point2D nearestPoint = node.point;
+        Point2D nearest;
+        switch (direction) {
+            case HORIZONTAL:
+                nearest = this.nearest(node.left, queryPoint, Direction.VERTICAL);
+                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                    nearestPoint = nearest;
+                }
+                nearest = this.nearest(node.right, queryPoint, Direction.VERTICAL);
+                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                    nearestPoint = nearest;
+                }
+                break;
+            case VERTICAL:
+                nearest = this.nearest(node.left, queryPoint, Direction.HORIZONTAL);
+                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                    nearestPoint = nearest;
+                }
+                nearest = this.nearest(node.right, queryPoint, Direction.HORIZONTAL);
+                if (nearest != null && nearest.distanceTo(queryPoint) < nearestPoint.distanceTo(queryPoint)) {
+                    nearestPoint = nearest;
+                }
+                break;
+        }
+        return nearestPoint;
     }
 
     // unit testing of the methods (optional)
     public static void main(String[] args) {
         KdTree kdTree = new KdTree();
+        kdTree.insert(new Point2D(0.4, 0.3));
         kdTree.insert(new Point2D(0.7, 0.5));
         kdTree.insert(new Point2D(0.1, 0.4));
-        kdTree.insert(new Point2D(0.3, 0.2));
+        kdTree.insert(new Point2D(0.3, 0.3));
         System.out.println(kdTree.contains(new Point2D(0.1, 0.2)));
         System.out.println(kdTree.contains(new Point2D(0.3, 0.3)));
-        System.out.println(kdTree.contains(new Point2D(0.7, 0.5)));
+        System.out.println(kdTree.contains(new Point2D(0.7, 0.7)));
         System.out.println("=============");
         Iterable<Point2D> range = kdTree.range(new RectHV(0.0, 0.0, 1, 1));
         range.forEach(System.out::println);
         System.out.println("=============");
         range = kdTree.range(new RectHV(0.0, 0.0, 0.5, 0.5));
         range.forEach(System.out::println);
+        System.out.println("=============");
+        System.out.println(kdTree.nearest(new Point2D(0.1, 0.3)));
         System.out.println("=============");
     }
 }
