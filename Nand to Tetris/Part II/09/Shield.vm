@@ -1,0 +1,26 @@
+function Shield.new 0
+push constant 3
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push constant 100
+pop this 2
+push pointer 0
+return
+function Shield.draw 0
+push argument 0
+pop pointer 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return

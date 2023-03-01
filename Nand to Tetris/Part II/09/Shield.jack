@@ -1,0 +1,20 @@
+class Shield {
+
+   field int x, y; // center of circle
+   field int radius; // radius of this circle, in pixels
+
+   /** Constructs a new shield circle with a given location and radius. */
+   constructor Shield new(int Ax, int Ay) {
+      let x = Ax;
+      let y = Ay;
+      let radius = 100;
+      return this;
+   }
+
+   /** Draws the shield on the screen. */
+   method void draw() {
+      do Screen.setColor(true);
+      do Screen.drawCircle(x, y, radius);
+      return;
+   }
+}

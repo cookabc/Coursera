@@ -1,0 +1,35 @@
+class Star {
+
+   field int x1, y1, x2, y2, x3, y3, x4, y4, x5, y5; // 5 coordinates of star points
+
+   /** Constructs a new Star with a given location and radius. */
+   constructor Star new(int Ax, int Ay) {
+      // top left point
+      let x1 = Ax - 95; // 0.95105651629 * 100
+      let y1 = Ay - 31; // 0.30901699437 * 100
+      // top right point
+      let x2 = Ax + 95; // 0.95105651629 * 100
+      let y2 = Ay - 31; // 0.30901699437 * 100
+      // bottom left point
+      let x3 = Ax - 59; // 0.58778525229 * 100
+      let y3 = Ay + 81; // 0.80901699437 * 100
+      // top most point
+      let x4 = Ax;
+      let y4 = Ay - 100;
+      // bottom right point
+      let x5 = Ax + 59; // 0.58778525229 * 100
+      let y5 = Ay + 81; // 0.80901699437 * 100
+      return this;
+   }
+
+   /** Draws the Star on the screen. */
+   method void draw() {
+      do Screen.setColor(false);
+      do Screen.drawLine(x1, y1, x2, y2);
+      do Screen.drawLine(x2, y2, x3, y3);
+      do Screen.drawLine(x3, y3, x4, y4);
+      do Screen.drawLine(x4, y4, x5, y5);
+      do Screen.drawLine(x5, y5, x1, y1);
+      return;
+   }
+}

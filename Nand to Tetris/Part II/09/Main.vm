@@ -1,0 +1,17 @@
+function Main.main 2
+push constant 250
+push constant 120
+call Shield.new 2
+pop local 0
+push constant 250
+push constant 120
+call Star.new 2
+pop local 1
+push local 0
+call Shield.draw 1
+pop temp 0
+push local 1
+call Star.draw 1
+pop temp 0
+push constant 0
+return

@@ -1,0 +1,82 @@
+function Star.new 0
+push constant 10
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+push constant 95
+sub
+pop this 0
+push argument 1
+push constant 31
+sub
+pop this 1
+push argument 0
+push constant 95
+add
+pop this 2
+push argument 1
+push constant 31
+sub
+pop this 3
+push argument 0
+push constant 59
+sub
+pop this 4
+push argument 1
+push constant 81
+add
+pop this 5
+push argument 0
+pop this 6
+push argument 1
+push constant 100
+sub
+pop this 7
+push argument 0
+push constant 59
+add
+pop this 8
+push argument 1
+push constant 81
+add
+pop this 9
+push pointer 0
+return
+function Star.draw 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 2
+push this 3
+call Screen.drawLine 4
+pop temp 0
+push this 2
+push this 3
+push this 4
+push this 5
+call Screen.drawLine 4
+pop temp 0
+push this 4
+push this 5
+push this 6
+push this 7
+call Screen.drawLine 4
+pop temp 0
+push this 6
+push this 7
+push this 8
+push this 9
+call Screen.drawLine 4
+pop temp 0
+push this 8
+push this 9
+push this 0
+push this 1
+call Screen.drawLine 4
+pop temp 0
+push constant 0
+return

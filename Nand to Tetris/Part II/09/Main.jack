@@ -1,0 +1,11 @@
+class Main {
+    function void main() {
+        var Shield shield;
+        var Star star;
+        let shield = Shield.new(250, 120);
+        let star = Star.new(250, 120);
+        do shield.draw();
+        do star.draw();
+        return;
+    }
+}
